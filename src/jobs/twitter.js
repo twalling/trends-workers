@@ -11,17 +11,37 @@ module.exports.create = function(config) {
     access_token_secret: config.twitter.accessTokenSecret
   });
 
-  var getDailyTrends = function() {
-    client.getDailyTrends({exclude: 'hashtags'}, function(err, results) {
+  var search = function() {
+    var location = common.constants.CURRENT_LOCATION;
+    var geocode = [location.lat, location.lon, location.radius].join(',');
+    client.search('photo', {geocode: geocode, result_type: 'recent'}, function(err, data) {
       if (err) {
-        console.error(err);
-        return;
+        return console.error(err);
       }
-      _.each(_.chain(results.trends).toArray().first().value(), function(trend) {
-        console.log(trend.query);
+      var ids = _.pluck(data.results, 'id_str');
+      Post.findByExternalIds(ids, function(err, posts) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log('checking twitter results');
+        var existing = {};
+        _.each(posts, function(post) {
+          existing[post.externalId] = post;
+        });
+        _.each(data.results, function(tweet) {
+          if (!existing[tweet.id_str]) {
+            console.log('found tweet with id: ' + tweet.id_str);
+            var post = new Post({
+              type: common.constants.POST_TYPES.TWITTER.type,
+              externalId: tweet.id_str,
+              title: tweet.text
+            });
+            post.save();
+          }
+        });
       });
     });
   };
 
-  return getDailyTrends;
+  return search;
 };
