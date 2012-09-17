@@ -14,7 +14,7 @@ module.exports.create = function(config) {
   var search = function() {
     var location = common.constants.CURRENT_LOCATION;
     var geocode = [location.lat, location.lon, location.radius].join(',');
-    client.search('photo', {geocode: geocode, result_type: 'recent'}, function(err, data) {
+    client.search('fenway', {geocode: geocode, result_type: 'recent'}, function(err, data) {
       if (err) {
         return console.error(err);
       }
@@ -34,6 +34,7 @@ module.exports.create = function(config) {
             var post = new Post({
               type: common.constants.POST_TYPES.TWITTER.type,
               externalId: tweet.id_str,
+              date: new Date(tweet.created_at),
               title: tweet.text
             });
             post.save();
