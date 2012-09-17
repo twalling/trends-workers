@@ -10,7 +10,8 @@
     "trends-common": "https://github.com/twalling/trends-common/tarball/master"
   },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": "0.8.x",
+    "npm": "1.1.x"
   },
   "scripts": {
     "start": "node src/workers.js"
