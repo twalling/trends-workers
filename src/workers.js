@@ -3,13 +3,13 @@ var _ = require('underscore');
 var common = require('trends-common');
 var config = common.config[env];
 
-var JOB_INTERVAL = 1000 * 10;
+common.lib.mongo.connectToMongo(config.mongodb, function(err) {
+  if (err) {
+    throw err;
+  }
+  console.log('Connected to Mongo');
 
-common.lib.mongo.connectToMongo(config.mongodb, function() {
-  var jobs = [
-    require('./jobs/instagram').create(config),
-    require('./jobs/twitter').create(config)
-  ];
+  var jobs = require('./jobs/').create(config);
 
   var runJobs = function() {
     _.each(jobs, function(job) {
@@ -17,9 +17,7 @@ common.lib.mongo.connectToMongo(config.mongodb, function() {
     });
   };
 
-  setInterval(function() {
-    runJobs();
-  }, JOB_INTERVAL);
+  setInterval(runJobs, config.jobInterval);
 
   runJobs();
 });

@@ -14,7 +14,10 @@ module.exports.create = function(config) {
   var search = function() {
     var location = common.constants.CURRENT_LOCATION;
     var geocode = [location.lat, location.lon, location.radius].join(',');
-    client.search('fenway', {geocode: geocode, result_type: 'recent'}, function(err, data) {
+    client.search(location.keyword, {
+      geocode: geocode,
+      result_type: 'recent'
+    }, function(err, data) {
       if (err) {
         return console.error(err);
       }

@@ -27,8 +27,10 @@ module.exports.create = function(config) {
             var post = new Post({
               type: common.constants.POST_TYPES.INSTAGRAM.type,
               externalId: instagram.id,
+              // Instagram time is in second, convert to ms
               date: new Date(parseInt(instagram.created_time, 10) * 1000),
-              media: instagram.images.thumbnail.url // standard_resolution is also available
+              // standard_resolution is also available
+              media: instagram.images.thumbnail.url
             });
             if (instagram.caption && instagram.caption.text) {
               post.title = instagram.caption.text;
